@@ -48,7 +48,7 @@ Our modeling goal is to predict [whether a batter's hit results in a home run](h
 
 ```{r}
 library(tidyverse)
-train_raw <- read_csv("train.csv")
+train_raw <- read_csv("sliced-s01e09-playoffs-1/train.csv")
 ```
 
 You can watch [this week's full episode of SLICED](https://www.youtube.com/channel/UCCsy9G2d0Q7m_d8cOtDineQ) to see lots of exploratory data analysis and visualization of this dataset, but let's just make a few plots to understand it better.
@@ -187,7 +187,17 @@ xgb_last <- xgb_wf %>%
 xgb_last
 ```
 
+```{r}
+collect_metrics(xgb_last)
+```
+
+
 We can collect the predictions on the testing set and do whatever we want, like create an ROC curve, or in this case compute log loss.
+
+```{r}
+collect_predictions(xgb_last)
+```
+
 
 ```{r}
 collect_predictions(xgb_last) %>%
@@ -202,7 +212,7 @@ We can also compute variable importance scores using the [vip]() package.
 library(vip)
 extract_workflow(xgb_last) %>%
   extract_fit_parsnip() %>%
-  vip(geom = "point", num_features = 15)
+  vip(geom = "col", num_features = 15) # alternative: point
 ```
 
 Using racing methods is a great way to tune through lots of possible parameter options more quickly. Perhaps I'll put it to the test next Tuesday, when I participate in the second and final episode of the SLICED playoffs!
