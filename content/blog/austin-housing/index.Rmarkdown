@@ -19,6 +19,8 @@ image:
 projects: []
 ---
 
+## Packages
+
 ```{r setup, include=FALSE}
 library(knitr)
 knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, 
@@ -45,6 +47,12 @@ Here is the code I used in the video, for those who prefer reading instead of or
 ## Explore data
 
 Our modeling goal is to predict [the price (binned) for homes in Austin, TX](https://www.kaggle.com/c/sliced-s01e11-semifinals/) given features about the real estate listing. This is a multiclass classification challenge, where we needed to submit a probability for each home being in each `priceRange` bin. The main data set provided is in a CSV file called `training.csv`.
+
+```{r}
+mypath = getwd()
+unzip("sliced-s01e11-semifinals.zip", exdir = mypath)
+```
+
 
 ```{r}
 library(tidyverse)
@@ -302,6 +310,11 @@ First off, how did the "race" go?
 ```{r}
 plot_race(xgb_word_rs)
 ```
+
+```{r}
+plotly::ggplotly(plot_race(xgb_word_rs))
+```
+
 
 We can look at the top results manually as well.
 
