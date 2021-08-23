@@ -23,7 +23,7 @@ Dylan shared voice testing results data with me via Google Sheets. The dataset i
 
 ```{r}
 library(tidyverse)
-library(googlesheets)
+library(googlesheets4)
 library(stringdist)
 
 alexa_raw <- gs_title("Alexa Speech to Text by Accent Data") %>%
