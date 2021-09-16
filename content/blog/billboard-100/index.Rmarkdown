@@ -142,9 +142,12 @@ rec_trained <- prep(billboard_rec)
 rec_trained
 ```
 
+`prep()` like `fit()` for a model
+`bake()` like `predict()` for a model
+
 When we `prep()` the recipe, we use the training data to estimate the quantities we need to apply these steps to new data. So in this case, we would, for example, compute the mean and standard deviation from the training data in order to center and scale. The testing data will be centered and scaled with the mean and standard deviation from the training data.
 
-Next, let's make a little helper function for us to extend this starter recipe. This function will:
+Next, let's make a little helper function - New chapter in [TMwR](https://www.tmwr.org/dimensionality.html) - for us to extend this starter recipe. This function will:
 
 - `prep()` the recipe (you can `prep()` an already-prepped recipe, for example after you have added new steps)
 - `bake()` the recipe using our **testing** data
@@ -168,7 +171,7 @@ plot_test_results <- function(recipe, dat = billboard_test) {
 
 ### PCA
 
-Let's start with principal component analysis, one of the most straightforward dimensionality reduction approaches. It is linear, unsupervised, and makes new features that try to account for as much variation in the data as possible. Remember that our function estimates PCA components from our training data and then applies those to our testing data.
+Let's start with principal component analysis, one of the most straightforward dimensionality reduction approaches. It is *linear*, *unsupervised*, and makes new features that try to account for as much *variation* in the data as possible. Remember that our function estimates PCA components from our training data and then applies those to our testing data.
 
 ```{r}
 rec_trained %>%
@@ -180,6 +183,24 @@ rec_trained %>%
 This looks a bit underwhelming in terms of the components being connected to weeks on the chart, but there is a little bit of relationship.
 
 We [can `tidy()` recipes](https://www.tmwr.org/recipes.html#tidy-a-recipe), either as a whole or for individual steps, and either before or after using `prep()`. Let's `tidy()` this recipe to find the features that contribute the most to the PC components.
+
+```{r}
+rec_trained %>%
+  step_pca(all_numeric_predictors(), num_comp = 4) %>%
+  prep() %>% 
+  tidy()
+
+rec_trained %>%
+  step_pca(all_numeric_predictors(), num_comp = 4) %>%
+  prep() %>% 
+  tidy(number = 2)
+
+rec_trained %>%
+  step_pca(all_numeric_predictors(), num_comp = 4) %>%
+  prep() %>% 
+  tidy(number = 3)
+```
+
 
 ```{r}
 rec_trained %>%
@@ -201,6 +222,15 @@ I've [implemented PCA for these features before](https://juliasilge.com/blog/bes
 ### PLS
 
 Partial least squares is a lot like PCA but it is **supervised**; it makes components that try to account for a lot of variation but also are related to the outcome.
+
+Updated `Biocmanager` to version 3.13 (for R 4.1) and then installed the missing package with `BiocManager::install('mixOmics')`.
+Latest bookdown vignette: https://mixomicsteam.github.io/Bookdown/.
+mixOmics offers a wide range of novel multivariate methods for the exploration and integration of biological datasets with a particular focus on variable selection. Single ‘omics analysis does not provide enough information to give a deep understanding of a biological system, but we can obtain a more holistic view of a system by combining multiple ‘omics analyses. 
+
+```{r}
+knitr::include_graphics("mixomics.jpg")
+```
+
 
 ```{r}
 rec_trained %>%
