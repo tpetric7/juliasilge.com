@@ -210,11 +210,24 @@ We can visualize the difference in performance across classes with a confusion m
 
 ```{r}
 collect_predictions(final_rs) %>%
+    conf_mat(program_category, .pred_class)
+```
+
+
+```{r}
+collect_predictions(final_rs) %>%
     conf_mat(program_category, .pred_class) %>%
     autoplot()
 ```
 
 We can also visualize the ROC curves for each class.
+
+```{r}
+collect_predictions(final_rs)  %>%
+  roc_curve(truth = program_category, .pred_Finance:.pred_Micro) %>%
+  autoplot()
+```
+
 
 ```{r}
 collect_predictions(final_rs)  %>%
