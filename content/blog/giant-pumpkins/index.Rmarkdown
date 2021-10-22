@@ -100,6 +100,7 @@ pumpkins %>%
            country = fct_reorder(country, weight_lbs)) %>%
     ggplot(aes(country, weight_lbs, color = country)) +
     geom_boxplot(outlier.colour = NA) +
+    geom_violin(outlier.colour = NA) +
     geom_jitter(alpha = 0.1, width = 0.15) +
     labs(x = NULL, y = "weight (lbs)") +
     theme(legend.position = "none")
