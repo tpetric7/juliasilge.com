@@ -182,7 +182,10 @@ bind_rows(
     mutate(mod = "ranger")
 ) %>%
   ggplot(aes(rating, .pred, color = id)) +
-  geom_abline(lty = 2, color = "gray50", size = 1.2) +
+  geom_vline(xintercept = mean(choco_test$rating),
+             lty = 3, color = "darkred", size = 1.5) +
+  geom_abline(intercept = 2.1, slope = 0.34, # approx.
+              lty = 2, color = "gray50", size = 1.2) +
   geom_jitter(width = 0.5, alpha = 0.5) +
   facet_wrap(vars(mod)) +
   coord_fixed()
