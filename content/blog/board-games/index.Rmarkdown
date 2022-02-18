@@ -112,10 +112,14 @@ game_rec <-
     step_tokenize(boardgamecategory, custom_token = split_category) %>%
     step_tokenfilter(boardgamecategory, max_tokens = 30) %>%
     step_tf(boardgamecategory)
+  
 
 ## just to make sure this works as expected
 game_prep <- prep(game_rec)
-bake(game_prep, new_data = NULL) %>% str()
+bake(game_prep, new_data = NULL)
+
+pp <- juice(game_prep)
+
 ```
 
 Now let’s create a tunable xgboost model specification, with only some of the most important hyperparameters tunable, and combine it with our preprocessing recipe in a `workflow()`. To achieve higher performance, we could try more careful and/or extensive choices for hyperparameter tuning.
@@ -141,13 +145,16 @@ Now we can [use `tune_race_anova()` to eliminate parameter combinations](https:/
 library(finetune)
 doParallel::registerDoParallel()
 
+metrics <- yardstick::metric_set(rmse, rsq)
+
 set.seed(234)
 xgb_game_rs <-
     tune_race_anova(
         xgb_wf,
         game_folds,
         grid = 20,
-        control = control_race(verbose_elim = TRUE)
+        control = control_race(verbose_elim = TRUE),
+        metrics = metrics
     )
 
 xgb_game_rs
