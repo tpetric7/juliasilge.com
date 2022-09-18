@@ -60,7 +60,7 @@ lego_sets %>%
     filter(num_parts > 0) %>%
     ggplot(aes(num_parts)) +
     geom_histogram(bins = 20) +
-    scale_x_log10()
+    scale_x_log10() 
 ```
 
 ## Build a model
