@@ -140,7 +140,7 @@ To explore more deeply, we can `tidy()` the topic model results to get a datafra
 ```{r}
 tidy(topic_model, matrix = "beta") %>%
   group_by(topic) %>%
-  slice_max(beta, n = 10, ) %>%
+  slice_max(beta, n = 10) %>%
   mutate(rank = row_number()) %>%
   ungroup() %>%
   select(-beta) %>%
@@ -200,7 +200,7 @@ To connect the topics back to seasons, let's use `tidy()` again, finding the `"g
 ```{r}
 episode_gamma <- tidy(
   topic_model, 
-  matrix = "gamma",
+  matrix = "theta", # or use: gamma
   document_names = rownames(dialogue_sparse)
 )
 episode_gamma
