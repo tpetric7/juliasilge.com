@@ -139,10 +139,12 @@ xgb_wf
 Our model is read to go! Let's tune across possible hyperparameter configurations using our training set (with a subset that is held back for early stopping) plus our validation set.
 
 ```{r}
+tictoc::tic()
 doParallel::registerDoParallel()
 set.seed(234)
 xgb_rs <- tune_grid(xgb_wf, childcare_set, grid = 15)
 xgb_rs
+tictoc::toc()
 ```
 
 All done!
@@ -182,6 +184,11 @@ How did this model perform on the testing data, that was not used in tuning or t
 ```{r}
 collect_metrics(childcare_fit)
 ```
+
+```{r}
+collect_predictions(childcare_fit)
+```
+
 
 What features are most important for this xgboost model?
 
