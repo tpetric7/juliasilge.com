@@ -49,6 +49,7 @@ We're not going to train a model here, but instead use the output (i.e. predicti
 
 ```{r}
 library(tidyverse)
+# pak::pak("simonpcouch/detectors")
 library(detectors)
 
 detectors
@@ -69,12 +70,12 @@ For the real humans, what is the distribution of predicted probability for nativ
 #| fig-width: 7
 #| fig-height: 6
 detectors |> 
-  filter(!is.na(native)) |> 
+  # filter(!is.na(native)) |> 
   mutate(native = case_when(native == "Yes" ~ "Native English writer",
                             native == "No" ~ "Non-native English writer")) |> 
   ggplot(aes(.pred_AI, fill = native)) +
   geom_histogram(bins = 40, show.legend = FALSE) +
-  facet_wrap(vars(native), scales = "free_y", nrow = 2) 
+  facet_wrap(vars(native), scales = "free_y", nrow = 3) 
 ```
 
 This is the main point of the [paper this data comes from](https://arxiv.org/abs/2304.02819): GPT detectors are much more wrong for non-native English writers than for native writers. Pretty dramatic! Let's walk through how to use classification metrics to measure this in a different way from looking at the distribution overall.
@@ -96,6 +97,13 @@ detectors |>
 ```
 
 This $2 \times 2$ matrix or table tells us specifics about how these models are right and wrong. Overall, these models look to be better at identifying human documents (2019 right vs. 449 wrong) than identifying AI documents (1158 right vs. 2559 wrong).
+
+```{r}
+detectors |> 
+  conf_mat(kind, .pred_class) |> 
+  autoplot()
+```
+
 
 One of the most common metrics for classification models is accuracy, just the plain old proportion of our data that is predicted correctly:
 
@@ -124,7 +132,7 @@ This is now a much bigger difference. Notice that the accuracy for native Englis
 
 If you've learned a bit about ML, you probably have heard that accuracy is often not a great metric (especially when you have much class imbalance) so let's try out a pair of related metrics that tell us [the true positive rate and true negative rate](https://en.wikipedia.org/wiki/Sensitivity_and_specificity).
 
-Sensitivity tells us the true positive rate:
+*Sensitivity*  tells us the true positive rate:
 
 ```{r}
 detectors |> 
@@ -135,7 +143,7 @@ detectors |>
   sensitivity(kind, .pred_class)
 ```
 
-Sensitivity is a metric that can vary between 0 (bad) and 1 (good) so this looks like we will have lots of false negatives. Can we measure the true positive rate for different types of human writers?
+*Sensitivity* is a metric that can vary between 0 (bad) and 1 (good) so this looks like we will have lots of false negatives. Can we measure the true positive rate for different types of human writers?
 
 ```{r}
 detectors |> 
@@ -151,7 +159,7 @@ detectors |>
   conf_mat(kind, .pred_class)
 ```
 
-Specificity, the true negative rate, works the same way, but "flipped":
+*Specificity*, the true negative rate, works the same way, but "flipped":
 
 ```{r}
 detectors |> 
@@ -160,6 +168,22 @@ detectors |>
 ```
 
 We can see that the true negative rate is much better for native English writers than non-native ones, but we can't compute a true negative rate for _only_ the AI-generated documents. This kind of situation comes up a fair amount for real models where a variable you are interested in only applies to one class in your classification problem.
+
+```{r}
+detectors |> 
+  group_by(detector) |> 
+  specificity(kind, .pred_class)
+```
+
+```{r}
+detectors |> 
+  filter(!is.na(native)) |> 
+  group_by(detector, native) |> 
+  specificity(kind, .pred_class) |> 
+  pivot_wider(names_from = native, values_from = .estimate) |> 
+  select(-.estimator)
+```
+
 
 ## Metrics that use a predicted probability
 

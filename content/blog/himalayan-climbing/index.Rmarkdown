@@ -175,7 +175,7 @@ The object `members_rec` is a recipe that has **not** been trained on data yet (
 library(themis)
 
 members_rec <- recipe(died ~ ., data = members_train) %>%
-    step_medianimpute(age) %>%
+    step_impute_median(age) %>%
     step_other(peak_id, citizenship) %>%
     step_dummy(all_nominal(), -died) %>%
     step_smote(died) 
